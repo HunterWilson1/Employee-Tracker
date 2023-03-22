@@ -1,20 +1,54 @@
-const inquirer = require('inquirer');
-const consoleTable = require('console.table');
-const connection = require('./db/connnection');
+const inquirer = require("inquirer");
+const consoleTable = require("console.table");
+const connection = require("./db/connnection");
 
-inquirer.prompt([
-    {
-        type: 'list',
-        name: 'option',
-        message: 'What would you like to do?',
+
+function options() {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "option",
+        message: "What would you like to do?",
         choices: [
-            'View all departments',
-            'View all roles',
-            'View all Employees',
-            'Add a department',
-            'Add a role',
-            'Add an employee',
-            'Update an employee role',
-        ]
-    }
-])
+          "View all departments",
+          "View all roles",
+          "View all employees",
+          "Add a department",
+          "Add a role",
+          "Add an employee",
+          "Update an employee role",
+          "Quit",
+        ],
+      },
+    ])
+    .then((answer) => {
+      switch (answer.option) {
+        case "View all departments":
+          viewAllDepartments();
+          break;
+        case "View all roles":
+          viewAllRoles();
+          break;
+        case "View all employees":
+          viewAllEmployees();
+          break;
+        case "Add a department":
+          addDepartment();
+          break;
+        case "Add a role":
+          addRole();
+          break;
+        case "Add an employee":
+          addEmployee();
+          break;
+        case "Update and employee role":
+          updateEmployeeRole();
+          break;
+        case "Quit":
+          quitPrompt();
+          break;
+      }
+    })
+    .catch((err) => console.error(err));
+}
