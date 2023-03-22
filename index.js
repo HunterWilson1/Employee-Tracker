@@ -1,6 +1,6 @@
 const inquirer = require("inquirer");
 const consoleTable = require("console.table");
-const connection = require("./db/connnection");
+const {db, connection} = require("./db/connnection");
 
 
 function options() {
@@ -52,3 +52,14 @@ function options() {
     })
     .catch((err) => console.error(err));
 }
+
+function viewAllDepartments() {
+    connection.query("SELECT * FROM department", (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        options();
+    });
+}
+
+
+options();
