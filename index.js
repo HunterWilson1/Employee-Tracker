@@ -53,6 +53,7 @@ function options() {
     .catch((err) => console.error(err));
 }
 
+//shows result of query in table then goes back to prompt
 function viewAllDepartments() {
     connection.query("SELECT * FROM department", (err, res) => {
         if (err) throw err;
@@ -61,5 +62,22 @@ function viewAllDepartments() {
     });
 }
 
+//function that takes the id, title, salary, and deparment name for the roles in database
+//then returns to the prompts
+function viewAllRoles() {
+  const query = 
+  "SELECT role.id, role.title, department.department_name AS department, role.salary FROM role JOIN department ON role.department_id = department.id";
+  connection.query(query, (err, res) => {
+    if (err) throw err;
+    console.table(res);
+    options();
+  })
+}
+
+//exits prompt
+function quitPrompt() {
+  console.log('Goodbye!');
+  process.exit();
+}
 
 options();
