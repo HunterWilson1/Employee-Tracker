@@ -112,6 +112,12 @@ function addDepartment() {
 
 
 function addRole () {
+  connection.query("SELECT * FROM department", (err, departments) => {
+    if (err) throw err;
+    const deparmentTable = departments.map((department) => ({
+      value: department.id,
+      name: department_name,
+    }));
   inquirer
     .prompt([
       {
@@ -128,10 +134,19 @@ function addRole () {
         type: "list",
         name: "department_id",
         message: "Which department does the new role belong to?",
-        
-      }
+        choices: deparmentTable,
+      },
     ])
-}
+      .then((answer) => {
+        connection.query("INSERT INTO role SET ?",
+        {
+          title: answer.title,
+        })
+      })
+  
+  })
+  }
+
 //exits prompt
 function quitPrompt() {
   console.log("Goodbye!");
