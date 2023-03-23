@@ -215,6 +215,25 @@ function addEmployee () {
     );
   });
 }
+
+function updateEmployeeRole() {
+  connection.query("SELECT * FROM employee", (err, employees) => {
+    if(err) throw err;
+
+    const employeeTable = employees.map((employee) => ({
+      value: employee.id,
+      name: `${employee.first_name} ${employee.last_name}`,
+    }));
+    connection.query("SELECT * FROM role", (err, roles) => {
+      if(err) throw err;
+
+      const roleTable = roles.map((role) => ({
+        value: role.id,
+        name: role.title,
+      }));
+    })
+  })
+}
 //exits prompt
 function quitPrompt() {
   console.log("Goodbye!");
