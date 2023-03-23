@@ -110,43 +110,95 @@ function addDepartment() {
     .catch((err) => console.error(err));
 }
 
-
-function addRole () {
+function addRole() {
+  //retrieves info from the department database and mapped into a new array for when prompt asks what department this role belongs to
   connection.query("SELECT * FROM department", (err, departments) => {
     if (err) throw err;
     const deparmentTable = departments.map((department) => ({
       value: department.id,
-      name: department_name,
+      name: department.department_name,
     }));
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        name: "title",
-        message: "Enter the name of the new role:",
-      },
-      {
-        type: "input",
-        name: "salary",
-        message: "Enter the salary of the new role",
-      },
-      {
-        type: "list",
-        name: "department_id",
-        message: "Which department does the new role belong to?",
-        choices: deparmentTable,
-      },
-    ])
-      .then((answer) => {
-        connection.query("INSERT INTO role SET ?",
+    inquirer
+      .prompt([
         {
-          title: answer.title,
-        })
+          type: "input",
+          name: "title",
+          message: "Enter the name of the new role:",
+        },
+        {
+          type: "input",
+          name: "salary",
+          message: "Enter the salary of the new role",
+        },
+        {
+          type: "list",
+          name: "department_id",
+          message: "Which department does the new role belong to?",
+          choices: deparmentTable,
+        },
+      ])
+      //after prompt the answers are inserted into the role database with info put in. If error then throw error
+      .then((answer) => {
+        connection.query(
+          "INSERT INTO role SET ?",
+          {
+            title: answer.title,
+            salary: answer.salary,
+            department_id: answer.department_id,
+          },
+          (err) => {
+            if (err) throw err;
+            console.log("The new role has been added");
+            options();
+          }
+        );
       })
-  
-  })
-  }
+      .catch((err) => console.log(err));
+  });
+}
 
+function addEmployee () {
+  connection.query("SELECT * FROM role", (err, roles) => {
+    if(err) throw err;
+    const roleTable = roles.map((role) => ({
+      value: role.id,
+      name: role.title,
+    }));
+
+  connection.query("SELECT * FROM employee WHERE manager_id IS NOT NULL", (err, managers) => {
+    if(err) throw err;
+    const managerTable = managers.map((manager) => ({
+      value: manager.manager_id,
+      name: `${manager.first_name} ${manager.last_name}`,
+    }));
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "first_name",
+          message: "Enter the employee's first name:",
+        },
+        {
+          type: "input",
+          name: "last_name",
+          message: "Enter the employee's last name:",
+        },
+        {
+          type: "list",
+          name: "role_id",
+          message: "Choose employee's role:",
+          choices: roleTable,
+        },
+        {
+          type: "list",
+          name: "manager_id",
+          message: "Choose employee's manager:",
+          choices: managerTable,
+        }
+      ])
+  })
+  })
+}
 //exits prompt
 function quitPrompt() {
   console.log("Goodbye!");
