@@ -41,7 +41,7 @@ function options() {
         case "Add an employee":
           addEmployee();
           break;
-        case "Update and employee role":
+        case "Update an employee role":
           updateEmployeeRole();
           break;
         case "Quit":
@@ -228,6 +228,7 @@ function updateEmployeeRole() {
       value: employee.id,
       name: `${employee.first_name} ${employee.last_name}`,
     }));
+
     connection.query("SELECT * FROM role", (err, roles) => {
       if (err) throw err;
 
@@ -235,6 +236,7 @@ function updateEmployeeRole() {
         value: role.id,
         name: role.title,
       }));
+
       inquirer
         .prompt([
           {
@@ -255,7 +257,7 @@ function updateEmployeeRole() {
             "UPDATE employee SET ? WHERE ?",
             [
               {
-                role_id: answer.role_id,
+                role_id: answer.roleId,
               },
               {
                 id: answer.employeeId,
@@ -263,9 +265,7 @@ function updateEmployeeRole() {
             ],
             (err) => {
               if (err) throw err;
-              console.log(
-                `${answer.employeeID}'s role was successfully updated`
-              );
+              console.log(`Employee's role was successfully updated`);
               options();
             }
           );
@@ -274,6 +274,7 @@ function updateEmployeeRole() {
     });
   });
 }
+
 //exits prompt
 function quitPrompt() {
   console.log("Goodbye!");
