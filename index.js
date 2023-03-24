@@ -157,17 +157,18 @@ function addRole() {
   });
 }
 
-function addEmployee () {
+function addEmployee() {
   connection.query("SELECT * FROM role", (err, roles) => {
-    if(err) throw err;
+    if (err) throw err;
     const roleTable = roles.map((role) => ({
       value: role.id,
       name: role.title,
     }));
 
-    connection.query("SELECT * FROM employee WHERE manager_id IS NOT NULL", 
+    connection.query(
+      "SELECT * FROM employee WHERE manager_id IS NOT NULL",
       (err, managers) => {
-        if(err) throw err;
+        if (err) throw err;
         const managerTable = managers.map((manager) => ({
           value: manager.id,
           name: `${manager.first_name} ${manager.last_name}`,
@@ -195,20 +196,23 @@ function addEmployee () {
               name: "manager_id",
               message: "Choose employee's manager:",
               choices: managerTable,
-            }
+            },
           ])
           .then((answer) => {
-            connection.query("INSERT INTO employee SET ?", {
-              first_name: answer.first_name,
-              last_name: answer.last_name,
-              role_id: answer.role_id,
-              manager_id: answer.manager_id,
-            },
-            (err) => {
-              if (err) throw err;
-              console.log("The new employee has been added");
-              options();
-            });
+            connection.query(
+              "INSERT INTO employee SET ?",
+              {
+                first_name: answer.first_name,
+                last_name: answer.last_name,
+                role_id: answer.role_id,
+                manager_id: answer.manager_id,
+              },
+              (err) => {
+                if (err) throw err;
+                console.log("The new employee has been added");
+                options();
+              }
+            );
           })
           .catch((err) => console.error(err));
       }
@@ -218,21 +222,57 @@ function addEmployee () {
 
 function updateEmployeeRole() {
   connection.query("SELECT * FROM employee", (err, employees) => {
-    if(err) throw err;
+    if (err) throw err;
 
     const employeeTable = employees.map((employee) => ({
       value: employee.id,
       name: `${employee.first_name} ${employee.last_name}`,
     }));
     connection.query("SELECT * FROM role", (err, roles) => {
-      if(err) throw err;
+      if (err) throw err;
 
       const roleTable = roles.map((role) => ({
         value: role.id,
         name: role.title,
       }));
-    })
-  })
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "employeeId",
+            message: "Choose the employee to update:",
+            choices: employeeTable,
+          },
+          {
+            type: "list",
+            name: "roleId",
+            message: "Choose the employee's new role:",
+            choices: roleTable,
+          },
+        ])
+        .then((answer) => {
+          connection.query(
+            "UPDATE employee SET ? WHERE ?",
+            [
+              {
+                role_id: answer.role_id,
+              },
+              {
+                id: answer.employeeId,
+              },
+            ],
+            (err) => {
+              if (err) throw err;
+              console.log(
+                `${answer.employeeID}'s role was successfully updated`
+              );
+              options();
+            }
+          );
+        })
+        .catch((err) => console.error(err));
+    });
+  });
 }
 //exits prompt
 function quitPrompt() {
